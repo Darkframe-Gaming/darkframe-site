@@ -67,5 +67,5 @@ Edit a file → commit → push. Pages republishes within a minute or two.
 
 ## Game links
 
-Game cards currently show a "LIVE ON STAKE ENGINE" badge with no clickable play link.
+Game cards currently show a "LIVE ON STAKE" badge with no clickable play link.
 Once the stake.com URLs for the games are final, a "PLAY" button can be added to each card.
