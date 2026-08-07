@@ -75,6 +75,32 @@ update the `mailto:` links in `index.html` and the legal pages.
 
 Edit a file → commit → push. Pages republishes within a minute or two.
 
+### Cache busting — required whenever css/site.css or js/site.js changes
+
+GitHub Pages serves static assets with `cache-control: max-age=14400` (4 hours) and Cloudflare
+caches them on top of that. HTML gets a much shorter TTL. So after a deploy the **new HTML can
+be served against the old stylesheet** — which renders the site broken until the cache expires.
+This is exactly what happened on 2026-08-07.
+
+The fix is the `?v=` token on every stylesheet and script link. Bump it in the same commit that
+touches the CSS or JS:
+
+```bash
+V=$(date +%Y%m%d)   # or a serial number if you ship twice in one day
+for f in index.html 404.html terms.html privacy.html responsible-play.html games/*.html; do
+  perl -pi -e "s{(href=\"[^\"]*css/site\.css)(\?v=[0-9]+)?\"}{\$1?v=$V\"}g;
+               s{(src=\"[^\"]*js/site\.js)(\?v=[0-9]+)?\"}{\$1?v=$V\"}g" "$f"
+done
+grep -ho 'site\.\(css\|js\)?v=[0-9]*' index.html 404.html terms.html privacy.html \
+  responsible-play.html games/*.html | sort | uniq -c   # expect 9 css + 5 js, one version
+```
+
+Verify after the Pages build reports `built`:
+
+```bash
+curl -sI "https://darkframegaming.com/css/site.css?v=$V" | grep -i last-modified
+```
+
 ## Stake links
 
 Every PLAY button on the site points at the **studio profile**:
