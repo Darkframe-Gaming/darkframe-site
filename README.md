@@ -5,16 +5,26 @@ Official website of the Darkframe game studio. Fully static — no build step; e
 ## Structure
 
 ```
-index.html            Main page (single page: games / studio / process / contact)
-terms.html            Terms of use
-privacy.html          Privacy policy
-responsible-play.html Responsible play
-404.html              Custom 404 page
-CNAME                 GitHub Pages custom-domain record (darkframegaming.com)
-css/site.css          Full design system
-js/site.js            Scroll reveals + card tilt effects
-assets/               Optimized images (webp) + self-hosted fonts (woff2)
+index.html                       Home (hero / game index / studio / process / contact)
+games/celestia.html              Game page — Celestia
+games/darkroom-exposure.html     Game page — Darkroom Exposure
+games/golden-dome.html           Game page — Golden Dome
+games/monster-munch.html         Game page — Monster Munch
+terms.html                       Terms of use
+privacy.html                     Privacy policy
+responsible-play.html            Responsible play
+404.html                         Custom 404 page
+CNAME                            GitHub Pages custom-domain record (darkframegaming.com)
+css/site.css                     Full design system
+js/site.js                       Scroll reveals + card tilt effects
+assets/                          Optimized images (webp) + self-hosted fonts (woff2)
 ```
+
+The home page lists the games compactly — thumbnail, hook, three feature tags, RTP / max win /
+grid, and two buttons (**PLAY** → Stake, **DETAILS** → the game page). The long-form description,
+feature breakdown and full specification table live on each game page.
+
+Pages inside `games/` reference shared files with `../` (`../css/site.css`, `../assets/…`).
 
 ## Deploying to GitHub Pages
 
@@ -65,7 +75,32 @@ update the `mailto:` links in `index.html` and the legal pages.
 
 Edit a file → commit → push. Pages republishes within a minute or two.
 
-## Game links
+## Stake links
 
-Game cards currently show a "LIVE ON STAKE" badge with no clickable play link.
-Once the stake.com URLs for the games are final, a "PLAY" button can be added to each card.
+Every PLAY button on the site points at the **studio profile**:
+
+```
+https://stake.bet/casino/group/darkframe
+```
+
+The `/tr/` locale prefix is deliberately omitted — the site is English, and Stake resolves the
+visitor's own locale from the un-prefixed path.
+
+Per-game deep links do not exist yet. When the individual `stake.bet` URLs for each game are
+final, replace the group URL in that game's own page (`games/<slug>.html`) and in its row on
+`index.html`; leave the nav, hero and footer buttons pointing at the group page.
+
+Per game there are 2 links worth swapping to a deep link — the hero PLAY button on the game page
+and the PLAY button on that game's index row. The nav, footer and bottom-CTA buttons should stay
+on the group page. (Current totals: 4 per game page, 8 on the index.)
+
+```bash
+grep -c "casino/group/darkframe" index.html games/*.html
+```
+
+## Game facts
+
+The numbers on each game page (grid, RTP, max win, spin counts, multiplier values) are taken
+from the live math configs in `math-sdk/games/<id>/game_config.py`. If a config changes, the
+game page is the thing to re-check — `celestia`, `darkroom`, `strike` (Golden Dome) and
+`monster` (Monster Munch).
