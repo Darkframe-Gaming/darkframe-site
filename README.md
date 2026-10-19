@@ -6,10 +6,7 @@ Official website of the Darkframe game studio. Fully static — no build step; e
 
 ```
 index.html                       Home (hero / game index / studio / process / contact)
-games/celestia.html              Game page — Celestia
-games/darkroom-exposure.html     Game page — Darkroom Exposure
-games/golden-dome.html           Game page — Golden Dome
-games/monster-munch.html         Game page — Monster Munch
+games/<slug>.html                Game pages — all 12 live games (cover art in assets/covers/)
 terms.html                       Terms of use
 privacy.html                     Privacy policy
 responsible-play.html            Responsible play
@@ -20,8 +17,14 @@ js/site.js                       Scroll reveals + card tilt effects
 assets/                          Optimized images (webp) + self-hosted fonts (woff2)
 ```
 
-The home page lists the games compactly — thumbnail, hook, three feature tags, RTP / max win /
-grid, and two buttons (**PLAY** → Stake, **DETAILS** → the game page). The long-form description,
+The home page has a poster-wall hero, a "latest release" spotlight and a filterable grid of every
+game — cover, hook, max win / RTP / hit rate, a live player badge, and two buttons (**PLAY** → the
+game on Stake, **DETAILS** → the game page).
+
+Live badges are SVGs served by StakeNerds (`https://stakenerds.com/api/badge/<game>-darkframe.svg`,
+and `/api/badge/studio/darkframe.svg` for the whole studio); `js/site.js` refreshes them every
+minute and hides one that fails to load. RTP, base-game max win and hit rate come from StakeNerds'
+`/data/math.json` (the public provably-fair catalogue); cover art from the Stake lobby images. The long-form description,
 feature breakdown and full specification table live on each game page.
 
 Pages inside `games/` reference shared files with `../` (`../css/site.css`, `../assets/…`).
@@ -103,26 +106,10 @@ curl -sI "https://darkframegaming.com/css/site.css?v=$V" | grep -i last-modified
 
 ## Stake links
 
-Every PLAY button on the site points at the **studio profile**:
-
-```
-https://stake.bet/casino/group/darkframe
-```
-
-The `/tr/` locale prefix is deliberately omitted — the site is English, and Stake resolves the
-visitor's own locale from the un-prefixed path.
-
-Per-game deep links do not exist yet. When the individual `stake.bet` URLs for each game are
-final, replace the group URL in that game's own page (`games/<slug>.html`) and in its row on
-`index.html`; leave the nav, hero and footer buttons pointing at the group page.
-
-Per game there are 2 links worth swapping to a deep link — the hero PLAY button on the game page
-and the PLAY button on that game's index row. The nav, footer and bottom-CTA buttons should stay
-on the group page. (Current totals: 4 per game page, 8 on the index.)
-
-```bash
-grep -c "casino/group/darkframe" index.html games/*.html
-```
+The nav, hero and footer buttons point at the **studio profile**,
+`https://stake.bet/casino/group/darkframe`. Each game's PLAY buttons use its own deep link,
+`https://stake.bet/casino/games/darkframe-<slug>` (the `stakeSlug` StakeNerds reads from the Stake
+lobby). Corker has no lobby slug yet, so its buttons still point at the studio profile.
 
 ## Game facts
 

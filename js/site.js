@@ -55,4 +55,50 @@
       });
     });
   }
+
+  /* game grid: filter chips + sort */
+  var grid = document.getElementById('game-grid');
+  if (grid) {
+    var cards = Array.prototype.slice.call(grid.children);
+    var buttons = document.querySelectorAll('[data-filter]');
+    var sortSel = document.getElementById('game-sort');
+    var filter = 'all';
+    function apply() {
+      cards.forEach(function (c) {
+        var t = (c.getAttribute('data-tags') || '').split(' ');
+        c.hidden = filter !== 'all' && t.indexOf(filter) === -1;
+      });
+      var key = sortSel ? sortSel.value : 'new';
+      cards.slice().sort(function (a, b) {
+        if (key === 'max') return (+b.dataset.max - +a.dataset.max) || (+b.dataset.order - +a.dataset.order);
+        if (key === 'az') return a.dataset.name.localeCompare(b.dataset.name);
+        if (key === 'hit') return +a.dataset.hit - +b.dataset.hit;
+        return +b.dataset.order - +a.dataset.order;
+      }).forEach(function (c) { grid.appendChild(c); });
+    }
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        filter = b.getAttribute('data-filter');
+        buttons.forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+        apply();
+      });
+    });
+    if (sortSel) sortSel.addEventListener('change', apply);
+  }
+
+  /* live badges: refresh the stakenerds SVGs every minute, hide any that fail */
+  var badges = document.querySelectorAll('img[data-live]');
+  badges.forEach(function (img) {
+    img.addEventListener('error', function () {
+      var box = img.closest('[data-live-box]');
+      if (box) box.style.display = 'none';
+    });
+  });
+  if (badges.length) {
+    setInterval(function () {
+      if (document.hidden) return;
+      var t = Math.floor(Date.now() / 60000);
+      badges.forEach(function (img) { img.src = img.getAttribute('data-live') + '?t=' + t; });
+    }, 60000);
+  }
 })();
